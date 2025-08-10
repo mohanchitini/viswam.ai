@@ -1,28 +1,13 @@
-import requests
-from bs4 import BeautifulSoup
+from scraper import scrape_and_clean
 
-def scrape_and_clean(url):
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
+# Test with a working URL
+print("Test 1 (Valid URL):")
+print(scrape_and_clean("https://www.india.gov.in"))
 
-        if not response.text.strip():
-            print("[ERROR] Empty page content.")
-            return ""
+# Test with an invalid URL
+print("\nTest 2 (Invalid URL):")
+print(scrape_and_clean("https://invalid-url.example"))
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        text = ' '.join(soup.stripped_strings)
-
-        if not text:
-            print("[ERROR] No visible text found.")
-            return ""
-
-        return text
-
-    except requests.exceptions.Timeout:
-        print("[ERROR] Request timed out.")
-        return ""
-
-    except requests.exceptions.RequestException as e:
-        print(f"[ERROR] Request failed: {e}")
-        return ""
+# Test with a slow site (simulate timeout)
+print("\nTest 3 (Timeout Test):")
+print(scrape_and_clean("https://httpstat.us/200?sleep=15000"))
