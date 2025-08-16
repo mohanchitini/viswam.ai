@@ -1,0 +1,36 @@
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
+
+def is_valid_url(url):
+    """Check if the given string is a valid URL."""
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc])
+    except:
+        return False
+
+def scrape_and_clean(url):
+    """Scrapes the given URL and returns clean text."""
+    # Validate URL
+    if not is_valid_url(url):
+        raise ValueError(f"Invalid URL: {url}")
+
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Error fetching {url}: {e}")
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Extract and clean text
+    text = soup.get_text(separator=" ", strip=True)
+    text = " ".join(text.split())
+    return text
+
+def chunk_text(text, max_length=500):
+    """Breaks text into smaller chunks for easier reading."""
+    words = text.split()
+    for i in range(0, len(words), max_length):
+        yield " ".join(words[i:i + max_length])

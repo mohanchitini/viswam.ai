@@ -1,0 +1,35 @@
+URL: https://www.python.org/
+Title: Welcome to Python.org
+
+Notice:While JavaScript is not essential for this website, your interaction with the content will be limited. Please turn JavaScript on for the full experience.
+
+Whether you're new to programming or an experienced developer, it's easy to learn and use Python.
+
+Start with our Beginner’s Guide
+
+Python source code and installers are available for download for all versions!
+
+Latest:Python 3.13.7
+
+Documentation for Python's standard library, along with tutorials and guides, are available online.
+
+docs.python.org
+
+Looking for work or have a Python related position that you're trying to hire for? Ourrelaunched community-run job boardis the place to go.
+
+jobs.python.org
+
+More
+
+More
+
+More
+
+Using Python to build a solution for instant tokenized real estate redemptionsby Brian Whippo, Head of Developer Relations, Algorand Foundation
+
+More
+
+The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers.Learn more
+
+Become a MemberDonate to the PSF
+

@@ -1,0 +1,49 @@
+URL: https://github.com/
+Title: GitHub · Build and ship software on a single, collaborative platform · GitHub
+
+Join the world’s most widely adopted AI-powered developer platform.
+
+Code quickly and more securely with GitHub Copilot embedded throughout your workflows.
+
+Duolingo boosts developer speed by 25% with GitHub Copilot
+
+2024 Gartner® Magic Quadrant™ for AI Code Assistants
+
+Optimize your process with simple and secured CI/CD.
+
+Start building instantly with a comprehensive dev environment in the cloud.
+
+Manage projects and chat with GitHub Copilot from anywhere.
+
+Sync with 17,000+ integrations and a growing library of Copilot Extensions.
+
+Solve security debt.Leverage AI-assisted security campaigns to reduce application vulnerabilities and zero-day attacks.
+
+Dependencies you can depend on.Update vulnerable dependencies with supported fixes for breaking changes.
+
+Your secrets, your business: protected.Detect, prevent, and remediate leaked secrets across your organization.
+
+7x fastervulnerability fixes with GitHub2
+
+90% coverageof alert types inall supported languages with Copilot Autofix
+
+Create issues and manage projects with tools that adapt to your code.
+
+Create space for open-ended conversations alongside your project.
+
+Create review processes that improve code quality and fit neatly into your workflow.
+
+Become an open source partner and support the tools and libraries that power your work.
+
+Figma streamlines development and strengthens security
+
+Mercedes-Benz standardizes source code and automates onboarding
+
+Mercado Libre cuts coding time by 50%
+
+Whether you’re scaling your development process or just learning how to code, GitHub is where you belong. Join the world’s most widely adopted AI-powered developer platform to build the technologies that redefine what’s possible.
+
+Survey: The AI wave continues to grow on software development teams, 2024.
+
+This 7X times factor is based on data from the industry’s longest running analysis of fix rates Veracode State of Software Security 2023, which cites the average time to fix 50% of flaws as 198 days vs. GitHub’s fix rates of 72% of flaws with in 28 days which is at a minimum of 7X faster when compared.
+

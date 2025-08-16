@@ -1,16 +1,25 @@
-# In main.py
-urls = [
-    "https://www.wikipedia.org/",
-    "https://www.python.org/",
-    "https://www.bbc.com/"
-]
+import sys
+from scrape_module import scraper
 
-from scrape_module.scraper import scrape_and_clean
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <url> [-g]")
+        sys.exit(1)
 
-for u in urls:
-    print(f"\nScraping: {u}")
-    result = scrape_and_clean(u)
-    if result:
-        print(result[:300])  # show first 300 chars
-    else:
-        print("No content found or request failed.")
+    url = sys.argv[1]
+    only_gov = "-g" in sys.argv  # if -g is given, restrict to government sites
+
+    try:
+        text = scraper.scrape_and_clean(url, only_gov=only_gov)
+        print(f"\nScraping: {url}\n")
+        
+        for i, chunk in enumerate(scraper.chunk_text(text), 1):
+            print(f"--- Chunk {i} ---")
+            print(chunk)
+            print()
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+if __name__ == "__main__":
+    main()

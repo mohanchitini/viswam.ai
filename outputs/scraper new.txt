@@ -1,0 +1,132 @@
+import sys
+import requests
+from requests.adapters import HTTPAdapter, Retry
+from bs4 import BeautifulSoup
+from urllib.parse import urlparse
+import re
+from datetime import datetime
+import os
+
+def is_valid_gov_in_url(url):
+    parsed = urlparse(url)
+    hostname = (parsed.hostname or "").lower()
+    return parsed.scheme in ("http", "https") and (
+        hostname.endswith(".gov.in")
+        or hostname.endswith(".nic.in")
+        or hostname.endswith(".gov")
+        or hostname in ("gov.in", "nic.in", "mygov.in", "www.mygov.in")
+    )
+
+def clean_paragraph_text(text):
+    return re.sub(r"\s+", " ", text).strip()
+
+def make_retry_session():
+    session = requests.Session()
+    retries = Retry(
+        total=5,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retries)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+def extract_best_block(soup):
+    """
+    Heuristic: find the <div> (or body fallback) containing the most combined paragraph text,
+    to reduce navigation/footer noise.
+    """
+    candidates = soup.find_all(["div", "main", "section"], recursive=True)
+    best_text = ""
+    for candidate in candidates:
+        paras = candidate.find_all("p")
+        texts = [clean_paragraph_text(p.get_text()) for p in paras if clean_paragraph_text(p.get_text())]
+        combined = "\n\n".join(texts)
+        if len(combined) > len(best_text):
+            best_text = combined
+    if best_text:
+        return best_text.split("\n\n")
+    # fallback to all <p> in document
+    paras = [clean_paragraph_text(p.get_text()) for p in soup.find_all("p") if clean_paragraph_text(p.get_text())]
+    return paras
+
+def fetch_paragraphs(url):
+    if not is_valid_gov_in_url(url):
+        print(f"[Invalid] URL rejected: {url}")
+        return []
+
+    session = make_retry_session()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": "https://www.google.com/",
+        "Connection": "keep-alive",
+    }
+
+    try:
+        response = session.get(url, headers=headers, timeout=20)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"[Error] Failed to fetch {url}: {e}")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    # Remove noise
+    for tag in soup(["script", "style", "header", "footer", "nav", "aside", "noscript"]):
+        tag.decompose()
+
+    # Use heuristic to get best block
+    paragraphs = extract_best_block(soup)
+    # Final cleaning and dedupe while preserving order
+    seen = set()
+    cleaned = []
+    for p in paragraphs:
+        if not p:
+            continue
+        p = clean_paragraph_text(p)
+        if not p or p in seen:
+            continue
+        seen.add(p)
+        cleaned.append(p)
+    return cleaned
+
+def make_output_filename(url):
+    parsed = urlparse(url)
+    safe = parsed.netloc.replace(".", "_")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return f"output_{safe}_{timestamp}.txt"
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python scraper.py <gov URL 1> [another URL] ...")
+        return
+
+    os.makedirs("outputs", exist_ok=True)
+
+    for url in sys.argv[1:]:
+        print(f"\n--- Scraping: {url} ---")
+        paras = fetch_paragraphs(url)
+        if paras:
+            # Preview top 5
+            print("[Success] Top 5 paragraphs:\n")
+            for i, p in enumerate(paras[:5], start=1):
+                print(f"[{i}] {p}")
+            print(f"... total {len(paras)} paragraph(s) extracted.")
+
+            # Save all to file
+            fname = make_output_filename(url)
+            path = os.path.join("outputs", fname)
+            with open(path, "w", encoding="utf-8") as f:
+                for i, p in enumerate(paras, start=1):
+                    f.write(f"[{i}] {p}\n\n")
+                f.write(f"✅ Extracted {len(paras)} paragraphs from {url} on {datetime.now().isoformat()}\n")
+            print(f"✅ Full output saved to {path}")
+        else:
+            print("[Warning] No readable paragraph text found or fetch failed.")
+
+if __name__ == "__main__":
+    main()
